@@ -386,6 +386,11 @@ public:
 #ifdef CEGUI_USE_OGRE_HLMS
     Ogre::RenderTarget* getOgreRenderTarget();
     const Ogre::HlmsSamplerblock* getHlmsSamplerblock();
+
+    //////////////////////////////////////////
+    // Custom Champion
+    void setHlmsSamplerblock(const Ogre::HlmsSamplerblock*);
+    //////////////////////////////////////////
 #endif
 
     // implement CEGUI::Renderer interface

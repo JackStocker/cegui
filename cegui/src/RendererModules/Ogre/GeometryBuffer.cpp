@@ -99,7 +99,7 @@ static void initialiseRenderOp(
 
     // basic initialisation of render op
     rop.vertexData = OGRE_NEW VertexData();
-    rop.operationType = RenderOperation::OT_TRIANGLE_LIST;
+    rop.operationType = OT_TRIANGLE_LIST;
     rop.useIndexes = false;
 
     // setup vertex declaration for format we will use
@@ -175,7 +175,8 @@ void OgreGeometryBuffer::draw() const
 
 #ifdef CEGUI_USE_OGRE_HLMS
     Ogre::Viewport* previousViewport = d_renderSystem._getViewport();
-    Ogre::Viewport* currentViewport = d_owner.getOgreRenderTarget()->getViewport(0);
+    //Ogre::Viewport* currentViewport = previousViewport;d_owner.getOgreRenderTarget()->getViewport(0);
+    Ogre::Viewport* currentViewport = previousViewport;//d_owner.getOgreRenderTarget()->getViewport(0);
 
     Rectf previousClipRect;
     previousClipRect.left(currentViewport->getScissorLeft());
@@ -213,8 +214,10 @@ void OgreGeometryBuffer::draw() const
                 currentViewport->setScissors(previousClipRect.left(), previousClipRect.top(),
                                                 previousClipRect.right(), previousClipRect.bottom());
             }
-            
+
+            d_renderSystem._setViewport(nullptr);
             d_renderSystem._setViewport(currentViewport);
+            //d_renderSystem._setViewport(currentViewport);
 #else
             d_renderSystem.setScissorTest(
                 i->clip, d_clipRect.left(), d_clipRect.top(),
@@ -237,7 +240,10 @@ void OgreGeometryBuffer::draw() const
 #ifdef CEGUI_USE_OGRE_HLMS
     currentViewport->setScissors(previousClipRect.left(), previousClipRect.top(),
                                     previousClipRect.right(), previousClipRect.bottom());
-    d_renderSystem._setViewport(previousViewport);
+    d_renderSystem._setViewport(nullptr);
+    d_renderSystem._setViewport(currentViewport);
+    //d_renderSystem._setViewport(previousViewport);
+    //d_renderSystem._setViewport(currentViewport);
 #endif
 
     // clean up RenderEffect
@@ -455,7 +461,7 @@ void OgreGeometryBuffer::initialiseTextureStates() const
     d_renderSystem._setTextureMatrix(0, Matrix4::IDENTITY);
     d_renderSystem._setTextureBlendMode(0, S_colourBlendMode);
     d_renderSystem._setTextureBlendMode(0, S_alphaBlendMode);
-    d_renderSystem._disableTextureUnitsFrom(1);
+    d_renderSystem._disableTextureUnitsFrom(2);
 
     d_renderSystem._setHlmsSamplerblock(0, d_owner.getHlmsSamplerblock());
 #else

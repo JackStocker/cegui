@@ -315,6 +315,10 @@ struct OgreRenderer_impl :
     const Ogre::HlmsBlendblock* d_hlmsBlendblock;
     //! HLMS block used to set sampling parameters
     const Ogre::HlmsSamplerblock* d_hlmsSamplerblock;
+
+    //! Hlms cache used to store pso
+    Ogre::SharedPtr<Ogre::HlmsCache> d_hlmsCache;
+
 #endif
     //! What we think is the current blend mode to use
     BlendMode d_activeBlendMode;
@@ -649,15 +653,20 @@ bool OgreRenderer::isTextureDefined(const String& name) const
 //----------------------------------------------------------------------------//
 void OgreRenderer::beginRendering()
 {
-    #if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
-        if ( !d_pimpl->d_previousVP ) 
-        {
-            d_pimpl->d_previousVP = d_pimpl->d_renderSystem->_getViewport();
-            if ( d_pimpl->d_previousVP && d_pimpl->d_previousVP->getCamera() )
-                d_pimpl->d_previousProjMatrix =
-                    d_pimpl->d_previousVP->getCamera()->getProjectionMatrixRS();
-        }
-    #endif
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
+    if ( !d_pimpl->d_previousVP )
+    {
+        d_pimpl->d_previousVP = d_pimpl->d_renderSystem->_getViewport();
+        if ( d_pimpl->d_previousVP && d_pimpl->d_previousVP->getCamera() )
+            d_pimpl->d_previousProjMatrix =
+                d_pimpl->d_previousVP->getCamera()->getProjectionMatrixRS();
+    }
+
+    //FIXME: ???
+    System::getSingleton().getDefaultGUIContext().getRenderTarget().activate();
+#endif
+
+    initialiseRenderStateSettings();
 
     if (d_pimpl->d_makeFrameControlCalls)
         d_pimpl->d_renderSystem->_beginFrame();
@@ -668,11 +677,13 @@ void OgreRenderer::endRendering()
 {
     if (d_pimpl->d_makeFrameControlCalls)
         d_pimpl->d_renderSystem->_endFrame();
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
+    //FIXME: ???
+    System::getSingleton().getDefaultGUIContext().getRenderTarget().deactivate();
 
-    #if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
-        if ( d_pimpl->d_previousVP ) 
-        {
-            d_pimpl->d_renderSystem->_setViewport(d_pimpl->d_previousVP);
+    if ( d_pimpl->d_previousVP )
+    {
+        d_pimpl->d_renderSystem->_setViewport(d_pimpl->d_previousVP);
 
             if ( d_pimpl->d_previousVP->getCamera() )
             {
@@ -988,20 +999,27 @@ void OgreRenderer::initialiseShaders()
 
     d_pimpl->d_pixelShaderParameters =
         d_pimpl->d_pixelShader->createParameters();
+
+#ifdef CEGUI_USE_OGRE_HLMS
+    d_pimpl->d_hlmsCache = Ogre::SharedPtr<Ogre::HlmsCache>(new Ogre::HlmsCache);
+    d_pimpl->d_hlmsCache->pso.initialize () ;
+    d_pimpl->d_hlmsCache->pso.vertexShader = d_pimpl->d_vertexShader;
+    d_pimpl->d_hlmsCache->pso.pixelShader = d_pimpl->d_pixelShader;
+    d_pimpl->d_hlmsCache->pso.blendblock = const_cast<Ogre::HlmsBlendblock*>(d_pimpl->d_hlmsBlendblock);
+    d_pimpl->d_hlmsCache->pso.macroblock = const_cast<Ogre::HlmsMacroblock*>(d_pimpl->d_hlmsMacroblock);
+#endif
+
 }
 
 //----------------------------------------------------------------------------//
 void OgreRenderer::cleanupShaders()
 {
 #ifdef CEGUI_USE_OGRE_HLMS
-    Ogre::HlmsManager* hlmsManager = d_pimpl->d_ogreRoot->getHlmsManager();
 
-    if (d_pimpl->d_hlmsBlendblock != NULL)
-        hlmsManager->destroyBlendblock(d_pimpl->d_hlmsBlendblock);
-    if (d_pimpl->d_hlmsMacroblock != NULL)
-        hlmsManager->destroyMacroblock(d_pimpl->d_hlmsMacroblock);
-    if (d_pimpl->d_hlmsSamplerblock != NULL)
-        hlmsManager->destroySamplerblock(d_pimpl->d_hlmsSamplerblock);
+    if (d_pimpl->d_hlmsCache != NULL) {
+        d_pimpl->d_renderSystem->_hlmsPipelineStateObjectDestroyed(&d_pimpl->d_hlmsCache->pso);
+        d_pimpl->d_hlmsCache.setNull();
+    }
 #endif
     OGRE_RESET(d_pimpl->d_pixelShaderParameters);
     OGRE_RESET(d_pimpl->d_vertexShaderParameters);
@@ -1036,10 +1054,7 @@ void OgreRenderer::setupRenderingBlendMode(const BlendMode mode,
 
     d_pimpl->d_activeBlendMode = mode;
 
-#ifdef CEGUI_USE_OGRE_HLMS
-    // Apply the HLMS blend block to the render system
-    d_pimpl->d_renderSystem->_setHlmsBlendblock(d_pimpl->d_hlmsBlendblock);
-#else
+#ifndef CEGUI_USE_OGRE_HLMS
     if (d_pimpl->d_activeBlendMode == BM_RTT_PREMULTIPLIED)
         d_pimpl->d_renderSystem->_setSceneBlending(SBF_ONE,
                                                     SBF_ONE_MINUS_SOURCE_ALPHA);
@@ -1075,11 +1090,7 @@ void OgreRenderer::initialiseRenderStateSettings()
 {
     using namespace Ogre;
 
-    // initialise render settings
-#ifdef CEGUI_USE_OGRE_HLMS
-    // Apply the HLMS macro block to the render system
-    d_pimpl->d_renderSystem->_setHlmsMacroblock(d_pimpl->d_hlmsMacroblock);
-#else
+#ifndef CEGUI_USE_OGRE_HLMS
     d_pimpl->d_renderSystem->setLightingEnabled(false);
     d_pimpl->d_renderSystem->_setDepthBufferParams(false, false);
     d_pimpl->d_renderSystem->_setDepthBias(0, 0);
@@ -1108,10 +1119,12 @@ void OgreRenderer::bindShaders()
     if (isUsingShaders())
     {
 #ifdef CEGUI_USE_OGRE_HLMS
-        Ogre::HlmsCache hlmsCache;
-        hlmsCache.vertexShader = d_pimpl->d_vertexShader;
-        hlmsCache.pixelShader = d_pimpl->d_pixelShader;
-        d_pimpl->d_renderSystem->_setProgramsFromHlms(&hlmsCache);
+        if ( ! d_pimpl->d_hlmsCache->pso.rsData )
+        {
+            d_pimpl->d_renderSystem->_hlmsPipelineStateObjectCreated(&d_pimpl->d_hlmsCache->pso);
+        }
+
+        d_pimpl->d_renderSystem->_setPipelineStateObject(&d_pimpl->d_hlmsCache->pso);
 #else
         if (Ogre::GpuProgram* prog = d_pimpl->d_vertexShader->_getBindingDelegate())
             d_pimpl->d_renderSystem->bindGpuProgram(prog);
@@ -1122,8 +1135,12 @@ void OgreRenderer::bindShaders()
     }
     else
     {
+#ifdef CEGUI_USE_OGRE_HLMS
+        d_pimpl->d_renderSystem->_setPipelineStateObject( 0 );
+#else
         d_pimpl->d_renderSystem->unbindGpuProgram(Ogre::GPT_VERTEX_PROGRAM);
         d_pimpl->d_renderSystem->unbindGpuProgram(Ogre::GPT_FRAGMENT_PROGRAM);
+#endif
     }
 }
 
@@ -1158,7 +1175,7 @@ void OgreRenderer::updateShaderParams() const
         if(d_pimpl->d_useGLSLCore)
         {
             d_pimpl->d_vertexShaderParameters->
-                setNamedConstant("modelViewPerspMatrix", getWorldViewProjMatrix());    
+                setNamedConstant("modelViewPerspMatrix", getWorldViewProjMatrix());
 
             d_pimpl->d_renderSystem->
                 bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM,
@@ -1272,6 +1289,14 @@ const Ogre::HlmsSamplerblock* OgreRenderer::getHlmsSamplerblock()
 {
     return d_pimpl->d_hlmsSamplerblock;
 }
+
+//////////////////////////////////////////
+// Custom Champion
+void OgreRenderer::setHlmsSamplerblock(const Ogre::HlmsSamplerblock* hlmsSamplerblock)
+{
+    d_pimpl->d_hlmsSamplerblock = hlmsSamplerblock;
+}
+//////////////////////////////////////////
 #endif
 
 //----------------------------------------------------------------------------//

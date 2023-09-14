@@ -72,7 +72,7 @@ void OgreTextureTarget::clear()
 {
     if (!d_viewportValid)
         updateViewport();
-#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
+//#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
     Ogre::Viewport* const saved_vp = d_renderSystem._getViewport();
 
     d_renderSystem._setViewport(d_viewport);
@@ -84,8 +84,8 @@ void OgreTextureTarget::clear()
         d_renderSystem._setViewport(saved_vp);
 #else
     d_renderSystem._setViewport(saved_vp);
+//#endif
 #endif
-#endif    
 
 }
 
@@ -99,8 +99,8 @@ Texture& OgreTextureTarget::getTexture() const
 void OgreTextureTarget::declareRenderSize(const Sizef& sz)
 {
     // exit if current size is enough
-    if ((d_area.getWidth() >= sz.d_width) && (d_area.getHeight() >=sz.d_height))
-        return;
+    //if ((d_area.getWidth() >= sz.d_width) && (d_area.getHeight() >=sz.d_height))
+    //    return;
 
     Ogre::TexturePtr rttTex = Ogre::TextureManager::getSingleton().createManual(
         OgreTexture::getUniqueName(),
@@ -117,15 +117,15 @@ void OgreTextureTarget::declareRenderSize(const Sizef& sz)
 
     setArea(init_area);
 
-#ifdef CEGUI_USE_OGRE_COMPOSITOR2
+//#ifdef CEGUI_USE_OGRE_COMPOSITOR2
     // Setting this should properly change everything
     d_renderTargetUpdated = true;
-#else
+//#else
     // delete viewport and reset ptr so a new one is generated.  This is
     // required because we have changed d_renderTarget so need a new VP also.
-    OGRE_DELETE d_viewport;
+    //OGRE_DELETE d_viewport;
     d_viewport = 0;
-#endif    
+//#endif
 
 
 
@@ -139,7 +139,7 @@ void OgreTextureTarget::declareRenderSize(const Sizef& sz)
 //----------------------------------------------------------------------------//
 bool OgreTextureTarget::isRenderingInverted() const
 {
-    return false;
+    return (d_renderTarget && d_renderTarget->requiresTextureFlipping());
 }
 
 //----------------------------------------------------------------------------//
