@@ -183,7 +183,7 @@ const Vector2f& BasicImage::getRenderedOffset() const
 
 //----------------------------------------------------------------------------//
 void BasicImage::render(GeometryBuffer& buffer, const Rectf& dest_area,
-                        const Rectf* clip_area, const ColourRect& colours) const
+                        const Rectf* clip_area, const ColourRect& colours, const bool alignToPixel) const
 {
     const QuadSplitMode quad_split_mode(TopLeftToBottomRight);
 
@@ -207,10 +207,13 @@ void BasicImage::render(GeometryBuffer& buffer, const Rectf& dest_area,
                           (d_area.d_max + ((final_rect.d_max - dest.d_max) * tex_per_pix)) * scale);
 
     // URGENT FIXME: Shouldn't this be in the hands of the user?
-    final_rect.d_min.d_x = CoordConverter::alignToPixels(final_rect.d_min.d_x);
-    final_rect.d_min.d_y = CoordConverter::alignToPixels(final_rect.d_min.d_y);
-    final_rect.d_max.d_x = CoordConverter::alignToPixels(final_rect.d_max.d_x);
-    final_rect.d_max.d_y = CoordConverter::alignToPixels(final_rect.d_max.d_y);
+    if (alignToPixel)
+    {
+       final_rect.d_min.d_x = CoordConverter::alignToPixels(final_rect.d_min.d_x);
+       final_rect.d_min.d_y = CoordConverter::alignToPixels(final_rect.d_min.d_y);
+       final_rect.d_max.d_x = CoordConverter::alignToPixels(final_rect.d_max.d_x);
+       final_rect.d_max.d_y = CoordConverter::alignToPixels(final_rect.d_max.d_y);
+    }
 
     Vertex vbuffer[6];
 

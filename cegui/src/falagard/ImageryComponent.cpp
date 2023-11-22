@@ -241,7 +241,7 @@ namespace CEGUI
                 }
 
                 // add geometry for image to the target window.
-                img->render(srcWindow.getGeometryBuffer(), finalRect, clippingRect, finalColours);
+                img->render(srcWindow.getGeometryBuffer(), finalRect, clippingRect, finalColours, ImagesPixelAligned );
 
                 finalRect.d_min.d_x += imgSz.d_width;
                 finalRect.d_max.d_x += imgSz.d_width;
@@ -293,5 +293,12 @@ namespace CEGUI
     {
         d_imagePropertyName = property;
     }
+
+    /////////////////////////////////////////////////////////
+    void ImageryComponent::SetImagesPixelAligned ( const bool images_pixel_aligned )
+    {
+       ImagesPixelAligned = images_pixel_aligned ;
+    }
+    /////////////////////////////////////////////////////////
 
 } // End of  CEGUI namespace section

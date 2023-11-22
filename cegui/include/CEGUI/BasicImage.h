@@ -62,7 +62,8 @@ public:
     void render(GeometryBuffer& buffer,
                 const Rectf& dest_area,
                 const Rectf* clip_area,
-                const ColourRect& colours) const;
+                const ColourRect& colours,
+                const bool alignToPixel) const;
 
     //! Notifies the class that the display size of the renderer has changed so that
     // the window can adapt to the new display size accordingly

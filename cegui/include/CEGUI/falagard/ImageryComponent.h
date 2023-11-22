@@ -223,6 +223,11 @@ namespace CEGUI
         */
         void setImagePropertySource(const String& property);
 
+
+        /////////////////////////////////////////////////////////
+        void SetImagesPixelAligned ( const bool images_pixel_aligned ) ;
+        /////////////////////////////////////////////////////////
+
     protected:
         // implemets abstract from base
         void render_impl(Window& srcWindow, Rectf& destRect, const CEGUI::ColourRect* modColours, const Rectf* clipper, bool clipToDisplay) const;
@@ -233,6 +238,8 @@ namespace CEGUI
         //! Horizontal formatting to be applied when rendering the image component.
         FormattingSetting<HorizontalFormatting> d_horzFormatting;
         String  d_imagePropertyName;            //!< Name of the property to access to obtain the image to be used.
+
+        bool ImagesPixelAligned = true ;
     };
 
 } // End of  CEGUI namespace section

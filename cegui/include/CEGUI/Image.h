@@ -170,7 +170,8 @@ public:
     virtual void render(GeometryBuffer& buffer,
                         const Rectf& dest_area,
                         const Rectf* clip_area,
-                        const ColourRect& colours) const = 0;
+                        const ColourRect& colours,
+                        const bool alignToPixel = true) const = 0;
 
     virtual void notifyDisplaySizeChanged(const Sizef& size) = 0;
 

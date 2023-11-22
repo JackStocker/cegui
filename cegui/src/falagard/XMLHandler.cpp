@@ -143,6 +143,10 @@ namespace CEGUI
     const String Falagard_xmlHandler::ActionAttribute("action");
     const String Falagard_xmlHandler::ComponentAttribute("component");
 
+    /////////////////////////////////////////////////////////
+    const String Falagard_xmlHandler::ImagesPixelAlignedAttribute ( "imagesPixelAligned" );
+    /////////////////////////////////////////////////////////
+
     // Default values
     const String Falagard_xmlHandler::PropertyDefinitionHelpDefaultValue("Falagard custom property definition - "
                                                                          "gets/sets a named user string.");
@@ -572,7 +576,7 @@ namespace CEGUI
     /*************************************************************************
         Method that handles the opening ImageryComponent XML element.
     *************************************************************************/
-    void Falagard_xmlHandler::elementImageryComponentStart(const XMLAttributes&)
+    void Falagard_xmlHandler::elementImageryComponentStart(const XMLAttributes& attributes )
     {
         if (d_imagerycomponent != 0)
         {
@@ -585,6 +589,8 @@ namespace CEGUI
         }
 
         d_imagerycomponent = CEGUI_NEW_AO ImageryComponent();
+
+        d_imagerycomponent->SetImagesPixelAligned ( attributes.getValueAsBool ( ImagesPixelAlignedAttribute, true ) ) ;
 
         CEGUI_LOGINSANE("-------> Image component definition...");
     }
@@ -612,7 +618,7 @@ namespace CEGUI
     /*************************************************************************
         Method that handles the opening FrameComponent XML element.
     *************************************************************************/
-    void Falagard_xmlHandler::elementFrameComponentStart(const XMLAttributes&)
+    void Falagard_xmlHandler::elementFrameComponentStart(const XMLAttributes& attributes)
     {
         if (d_framecomponent != 0)
         {
@@ -625,6 +631,8 @@ namespace CEGUI
         }
 
         d_framecomponent = CEGUI_NEW_AO FrameComponent();
+
+        d_framecomponent->SetImagesPixelAligned ( attributes.getValueAsBool ( ImagesPixelAlignedAttribute, true ) ) ;
 
         CEGUI_LOGINSANE("-------> Frame component definition...");
     }

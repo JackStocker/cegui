@@ -321,7 +321,7 @@ void FrameComponent::render_impl(Window& srcWindow, Rectf& destRect,
         }
 
         // draw this element.
-        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours);
+        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours, ImagesPixelAligned );
     }
 
     // top-right image
@@ -352,7 +352,7 @@ void FrameComponent::render_impl(Window& srcWindow, Rectf& destRect,
         }
 
         // draw this element.
-        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours);
+        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours, ImagesPixelAligned );
     }
 
     // bottom-left image
@@ -383,7 +383,7 @@ void FrameComponent::render_impl(Window& srcWindow, Rectf& destRect,
         }
 
         // draw this element.
-        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours);
+        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours, ImagesPixelAligned );
     }
 
     // bottom-right image
@@ -413,7 +413,7 @@ void FrameComponent::render_impl(Window& srcWindow, Rectf& destRect,
         }
 
         // draw this element.
-        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours);
+        componentImage->render(srcWindow.getGeometryBuffer(), finalRect, clipper, imageColours, ImagesPixelAligned );
     }
 
     // top image
@@ -672,7 +672,7 @@ void FrameComponent::renderImage(GeometryBuffer& buffer, const Image* image,
             else
                 clippingRect = clipper;
 
-            image->render(buffer, finalRect, clippingRect, colours);
+            image->render(buffer, finalRect, clippingRect, colours, ImagesPixelAligned );
 
             finalRect.d_min.d_x += imgSz.d_width;
             finalRect.d_max.d_x += imgSz.d_width;
@@ -779,6 +779,13 @@ bool FrameComponent::operator==(const FrameComponent& rhs) const
 }
 
 //----------------------------------------------------------------------------//
+
+/////////////////////////////////////////////////////////
+void FrameComponent::SetImagesPixelAligned ( const bool images_pixel_aligned )
+{
+   ImagesPixelAligned = images_pixel_aligned ;
+}
+/////////////////////////////////////////////////////////
 
 }
 

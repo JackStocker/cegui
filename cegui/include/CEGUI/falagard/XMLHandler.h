@@ -190,6 +190,10 @@ namespace CEGUI
         //! Attribute name that stores some component enum value
         static const String ComponentAttribute;
 
+        /////////////////////////////////////////////////////////
+        static const String ImagesPixelAlignedAttribute;
+        /////////////////////////////////////////////////////////
+
     protected:
         /*************************************************************************
             ChainedXMLHandler base class overrides

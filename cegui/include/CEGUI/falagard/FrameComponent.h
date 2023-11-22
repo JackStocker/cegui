@@ -355,6 +355,11 @@ public:
     //! Default value for the VertFormat elements of the FrameComponent
     static const VerticalFormatting VerticalFormattingDefault;
 
+
+    /////////////////////////////////////////////////////////
+    void SetImagesPixelAligned ( const bool images_pixel_aligned ) ;
+    /////////////////////////////////////////////////////////
+
 protected:
     struct FrameImageSource
     {
@@ -400,6 +405,8 @@ protected:
 
     //! FrameImageSource array describing images to be used.
     FrameImageSource d_frameImages[FIC_FRAME_IMAGE_COUNT];
+
+    bool ImagesPixelAligned = true ;
 };
 
 }
