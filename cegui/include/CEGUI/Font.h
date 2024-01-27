@@ -407,6 +407,29 @@ public:
     */
     const FontGlyph* getGlyphData(utf32 codepoint) const;
 
+    /////////////////////////////////////////////////////////
+    // Champion
+    void AdjustCharacterSpacing(const float offset)
+    {
+       for ( auto &cp : d_cp_map )
+       {
+          // First ensure the character has been loaded
+          if ( ! cp.second.isValid () )
+          {
+             auto* glyph = findFontGlyph ( cp.first ) ;
+
+             if ( ! glyph )
+             {
+                continue ;
+             }
+          }
+
+          // Then apply manual adjustment
+          cp.second.setAdvance ( cp.second.getAdvance () + offset ) ;
+       }
+    }
+    /////////////////////////////////////////////////////////
+
 protected:
     //! Constructor.
     Font(const String& name, const String& type_name, const String& filename,
