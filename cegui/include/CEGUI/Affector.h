@@ -247,6 +247,11 @@ public:
     */
     void writeXMLToStream(XMLSerializer& xml_stream) const;
 
+    /////////////////////////////////////////
+    // Added so we can not animate invisible windows, but continue animations for windows that are becoming visible through animation (such as tooltips)
+    bool AffectsVisibility = false ;
+    /////////////////////////////////////////
+
 private:
     //! parent animation definition
     Animation* d_parent;

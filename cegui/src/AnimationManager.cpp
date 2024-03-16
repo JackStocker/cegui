@@ -36,6 +36,8 @@
 #include "CEGUI/XMLParser.h"
 #include "CEGUI/Animation_xmlHandler.h"
 
+#include "CEGUI/Window.h"
+
 // Start of CEGUI namespace section
 namespace CEGUI
 {
@@ -344,8 +346,14 @@ void AnimationManager::autoStepInstances(float delta)
     for (AnimationInstanceMap::const_iterator it = d_animationInstances.begin();
          it != d_animationInstances.end(); ++it)
     {
-    	if (it->second->isAutoSteppingEnabled())
+      //////////////////////////////////////////////
+      // Custom CEGUI change only steps the animations if the window is visible,
+      // which means that we need to explicitly hide the parent windows when they are not needed (as not having a parent does not actually hide them).
+    	if (it->second->isAutoSteppingEnabled() && ( it->second->getTarget()->isEffectiveVisible() || it->second->getDefinition()->AffectsVisibility))
+      {
     		it->second->step(delta);
+      }
+      //////////////////////////////////////////////
     }
 }
 

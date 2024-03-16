@@ -37,6 +37,8 @@
 #include "CEGUI/Logger.h"
 #include "CEGUI/Animation_xmlHandler.h"
 
+#include "CEGUI/Window.h"
+
 // Start of CEGUI namespace section
 namespace CEGUI
 {
@@ -96,6 +98,11 @@ Affector::ApplicationMethod Affector::getApplicationMethod() const
 void Affector::setTargetProperty(const String& target)
 {
     d_targetProperty = target;
+
+    //////////////////////////////////////////////////
+    AffectsVisibility = ( ( d_targetProperty == Window::AlphaPropertyName ) || 
+                          ( d_targetProperty == Window::VisiblePropertyName ) ) ;
+    //////////////////////////////////////////////////
 }
 
 //----------------------------------------------------------------------------//

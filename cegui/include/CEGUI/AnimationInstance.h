@@ -112,13 +112,13 @@ public:
         Sets the target property set - this class will get it's properties
         affected by the Affectors!
     */
-    void setTarget(PropertySet* target);
+    void setTarget( Window* target);
 
     /*!
     \brief
         Retrieves the target property set
     */
-    PropertySet* getTarget() const;
+    Window* getTarget() const;
 
     /*!
     \brief
@@ -423,7 +423,7 @@ private:
     Animation* d_definition;
 
     //! target property set, properties of this are affected by Affectors
-    PropertySet* d_target;
+    Window* d_target;
     //! event receiver, receives events about this animation instance
     EventSet* d_eventReceiver;
     /** event sender, sends events and can control this animation instance if

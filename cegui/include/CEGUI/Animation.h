@@ -271,6 +271,11 @@ public:
     */
     void writeXMLToStream(XMLSerializer& xml_stream, const String& name_override = "") const;
 
+    /////////////////////////////////////////
+    // Added so we can not animate invisible windows, but continue animations for windows that are becoming visible through animation (such as tooltips)
+    bool AffectsVisibility = false ;
+    /////////////////////////////////////////
+
 private:
     //! name of this animation
     String d_name;

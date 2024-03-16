@@ -110,6 +110,8 @@ Affector* Animation::createAffector(void)
     Affector* ret = CEGUI_NEW_AO Affector(this);
     d_affectors.push_back(ret);
 
+    AffectsVisibility = std::any_of ( d_affectors.begin (), d_affectors.end (), [](const Affector* a) {return a->AffectsVisibility;} ) ;
+
     return ret;
 }
 
@@ -137,6 +139,8 @@ void Animation::destroyAffector(Affector* affector)
 
     d_affectors.erase(it);
     CEGUI_DELETE_AO affector;
+
+    AffectsVisibility = std::any_of ( d_affectors.begin (), d_affectors.end (), [](const Affector* a) {return a->AffectsVisibility;} ) ;
 }
 
 //----------------------------------------------------------------------------//

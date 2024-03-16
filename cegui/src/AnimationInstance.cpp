@@ -84,7 +84,7 @@ Animation* AnimationInstance::getDefinition() const
 }
 
 //----------------------------------------------------------------------------//
-void AnimationInstance::setTarget(PropertySet* target)
+void AnimationInstance::setTarget(Window* target)
 {
     d_target = target;
 
@@ -97,7 +97,7 @@ void AnimationInstance::setTarget(PropertySet* target)
 }
 
 //----------------------------------------------------------------------------//
-PropertySet* AnimationInstance::getTarget() const
+Window* AnimationInstance::getTarget() const
 {
     return d_target;
 }
