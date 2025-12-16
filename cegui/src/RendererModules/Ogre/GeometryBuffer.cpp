@@ -183,6 +183,25 @@ void OgreGeometryBuffer::draw() const
     previousClipRect.top(currentViewport->getScissorTop());
     previousClipRect.right(currentViewport->getScissorWidth());
     previousClipRect.bottom(currentViewport->getScissorHeight());
+
+    int actualWidth = currentViewport->getActualWidth();
+    int actualHeight = currentViewport->getActualHeight();
+
+    ////////////////////////////////////////////////////////////////////////
+    auto clipRect = d_clipRect ;
+
+    if ( d_owner.IsTextureTargetActive )
+    {
+       // For RTTs we have to flip the clip/scissor area for some reason
+       clipRect.d_min.d_y = actualHeight - clipRect.d_min.d_y ;
+       clipRect.d_max.d_y = actualHeight - clipRect.d_max.d_y ;
+    }
+
+    float scissorsLeft = clipRect.left() / actualWidth;
+    float scissorsTop = clipRect.top() / actualHeight;
+    float scissorsWidth = ( clipRect.right() - clipRect.left()) / actualWidth;
+    float scissorsHeight = ( clipRect.bottom () - clipRect.top () ) / actualHeight;
+    ////////////////////////////////////////////////////////////////////////
 #endif
 
     const int pass_count = d_effect ? d_effect->getPassCount() : 1;
@@ -201,12 +220,6 @@ void OgreGeometryBuffer::draw() const
 #ifdef CEGUI_USE_OGRE_HLMS
             if (i->clip)
             {
-                int actualWidth = currentViewport->getActualWidth();
-                int actualHeight = currentViewport->getActualHeight();
-                float scissorsLeft = d_clipRect.left() / actualWidth;
-                float scissorsTop = d_clipRect.top() / actualHeight;
-                float scissorsWidth = (d_clipRect.right() - d_clipRect.left()) / actualWidth;
-                float scissorsHeight = (d_clipRect.bottom() - d_clipRect.top()) / actualHeight;
                 currentViewport->setScissors(scissorsLeft, scissorsTop, scissorsWidth, scissorsHeight);
             }
             else

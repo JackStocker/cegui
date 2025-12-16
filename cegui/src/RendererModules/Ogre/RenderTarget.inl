@@ -175,6 +175,10 @@ void OgreRenderTarget<T>::activate()
     d_renderSystem._setViewport(d_viewport);
 //#endif
 
+    ///////////////////////////////////////////////////////
+    d_owner.IsTextureTargetActive = isImageryCache () ;
+    ///////////////////////////////////////////////////////
+
     d_owner.setProjectionMatrix(d_matrix);
     d_owner.setViewMatrix(Ogre::Matrix4::IDENTITY);
     d_owner.initialiseRenderStateSettings();

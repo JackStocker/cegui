@@ -419,6 +419,10 @@ public:
     uint getMaxTextureSize() const;
     const String& getIdentifierString() const;
 
+    ///////////////////////////////////////////////////////
+    bool IsTextureTargetActive = false ;
+    ///////////////////////////////////////////////////////
+
 protected:
     //! default constructor.
     OgreRenderer();
