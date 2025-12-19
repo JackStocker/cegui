@@ -144,11 +144,13 @@ void OgreRenderTarget<T>::updateOgreViewportDimensions(
 {
     if (rt)
     {
+        const auto viewport_scaling = isImageryCache () ? 1.0f : d_owner.UIScaling ;
+
         d_viewport->setDimensions(
-            d_ogreViewportDimensions.left() / rt->getWidth(),
-            d_ogreViewportDimensions.top() / rt->getHeight(),
-            d_ogreViewportDimensions.getWidth() / rt->getWidth(),
-            d_ogreViewportDimensions.getHeight() / rt->getHeight());
+            viewport_scaling * d_ogreViewportDimensions.left() / rt->getWidth(),
+            viewport_scaling * d_ogreViewportDimensions.top() / rt->getHeight(),
+            viewport_scaling * d_ogreViewportDimensions.getWidth() / rt->getWidth(),
+            viewport_scaling * d_ogreViewportDimensions.getHeight() / rt->getHeight());
     }
 }
 //#endif

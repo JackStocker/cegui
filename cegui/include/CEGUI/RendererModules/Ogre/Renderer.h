@@ -420,7 +420,8 @@ public:
     const String& getIdentifierString() const;
 
     ///////////////////////////////////////////////////////
-    bool IsTextureTargetActive = false ;
+    bool  IsTextureTargetActive = false ;
+    float UIScaling             = 1.0f ;
     ///////////////////////////////////////////////////////
 
 protected:

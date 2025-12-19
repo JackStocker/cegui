@@ -193,14 +193,21 @@ void OgreGeometryBuffer::draw() const
     if ( d_owner.IsTextureTargetActive )
     {
        // For RTTs we have to flip the clip/scissor area for some reason
-       clipRect.d_min.d_y = actualHeight - clipRect.d_min.d_y ;
-       clipRect.d_max.d_y = actualHeight - clipRect.d_max.d_y ;
+       const auto min_y = actualHeight - clipRect.d_max.d_y ;
+       const auto max_y = actualHeight - clipRect.d_min.d_y ;
+
+       clipRect.d_min.d_y = min_y ;
+       clipRect.d_max.d_y = max_y ;
+    }
+    else
+    {
+       clipRect = d_clipRect * d_owner.UIScaling ;
     }
 
-    float scissorsLeft = clipRect.left() / actualWidth;
-    float scissorsTop = clipRect.top() / actualHeight;
-    float scissorsWidth = ( clipRect.right() - clipRect.left()) / actualWidth;
-    float scissorsHeight = ( clipRect.bottom () - clipRect.top () ) / actualHeight;
+    float scissorsLeft = std::max ( clipRect.left () / actualWidth, 0.0f ) ;
+    float scissorsTop = std::max ( clipRect.top () / actualHeight, 0.0f ) ;
+    float scissorsWidth = std::min ( clipRect.getWidth () / actualWidth, 1.0f ) ;
+    float scissorsHeight = std::min ( clipRect.getHeight () / actualHeight, 1.0f ) ;
     ////////////////////////////////////////////////////////////////////////
 #endif
 
